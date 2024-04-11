@@ -32,10 +32,8 @@ def js_css(file):
 @app.route('/api/login', methods=["POST"])
 def login():
     data=request.get_json()
-    print(data)
     mydb, my_cursor = dbconnect()
     query = ("SELECT * FROM User WHERE username= %s AND password=%s")
-    print(data['username'])
     my_cursor.execute(query, (data['username'],data['password']))
     res = {'username':'','password':'', 'phone':'', 'firstname':'','lastname':'','email':'', 'message':''}
     field_names = [i[0] for i in my_cursor.description]
@@ -46,7 +44,28 @@ def login():
         res['message'] = 'incorrect credentials'
     
     dbclose((mydb, my_cursor))
-    return jsonify(res),201        
+    return jsonify(res),201   
+
+@app.route('/api/register', methods=["POST"])
+def register():
+    data=request.get_json()
+    try:
+        res = {'username':data['username'],'password':data['password'], 'phone':data['phone'], 'firstname':data['firstname'],'lastname':data['lastname'],'email':data['email'], 'message':''}
+        mydb, my_cursor = dbconnect()
+        query = ("INSERT INTO "
+                 "User(username,firstname, lastname,password, email, phone)"
+                 "VALUES(%s,%s,%s,%s,%s,%s)")
+
+        my_cursor.execute(query, (data['username'],data['firstname'],data['lastname'],data['password'],data['email'],data['phone']))
+        count = my_cursor.rowcount
+        if count == 0 or data['username'] == '':
+            res['message'] = 'user not created'
+        mydb.commit()     
+    except:
+        res['message'] = 'an error has occured'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201  
 
 if __name__ == '__main__':
     app.run(debug=True)

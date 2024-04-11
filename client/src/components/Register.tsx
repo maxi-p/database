@@ -6,7 +6,7 @@ const Register = props =>
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState(
-        {firstname: "", lastname: "", username: "", password: "", email: "", phoneNumber: ""}
+        {email: "",firstname: "",lastname: "",password: "",phone: "",username: ""}
     );
 
     const handleChange = (event) =>{
@@ -33,15 +33,17 @@ const Register = props =>
         {
             const response = await fetch('api/register', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
             var res = JSON.parse(await response.text());
-            if(res.error)
-                setMessage(res.error);
+            if(res.message !== '')
+                setMessage(res.message);
             else
             {
-                var user = {username: res.username, firstName:res.firstName, lastName:res.lastName, id:res.id}
-                localStorage.setItem('user_data', JSON.stringify(user));
-                props.loggedHandler(user)
+                console.log(res)
+                var user = {email: res.email ,firstname: res.firstname,lastname: res.lastname,password: res.password,phone: res.phone,username: res.username};
+                console.log(user)
+                localStorage.setItem('logged_user', JSON.stringify(user));
+                props.loggedHandler(user);
                 setMessage('');
-                navigate('/verify-email');
+                navigate('/home');
             }
             
         }
@@ -99,9 +101,9 @@ const Register = props =>
                 <br/>
                 <input 
                     type="text"
-                    id="phoneNumber"
+                    id="phone"
                     placeholder="Phone number" 
-                    value={formData.phoneNumber}
+                    value={formData.phone}
                     onChange={handleChange} 
                 />
                 <br/>
