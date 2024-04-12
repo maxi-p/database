@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
 const NavBar = props => {
   const navigate = useNavigate();
@@ -17,15 +17,15 @@ const NavBar = props => {
     }
   }
   return (
-    <ul>
-      <li>
+    <ul className='ul'>
+      <li className='li'>
         <a 
           className=""
           onClick={nav}
           name='home'
         >Home</a></li>
       {!props.loggedUser && 
-      (<li>
+      (<li className='li'>
         <a 
           className=""
           onClick={nav}
@@ -33,7 +33,7 @@ const NavBar = props => {
         >Login</a>
       </li>)
       }
-      {!props.loggedUser && (<li>
+      {!props.loggedUser && (<li className='li'>
         <a 
           className=""
           onClick={nav}
@@ -42,7 +42,7 @@ const NavBar = props => {
       </li>)
       }
       {props.loggedUser &&
-      (<li>
+      (<li className='li'>
         <a 
           className=""
           onClick={nav}
@@ -51,7 +51,7 @@ const NavBar = props => {
       </li>)
       }  
       {props.loggedUser &&
-      (<li>
+      (<li className='li'>
         <a 
           className=""
           onClick={nav}

@@ -31,7 +31,7 @@ const  App = () => {
 
           <Route path="/user-home"
             index
-            element={isLoggedIn? <UserHomePage loggedHandler={loggedHandler}/>:<Navigate to="/login"/>}
+            element={isLoggedIn? <UserHomePage loggedHandler={loggedHandler} loggedUser={isLoggedIn}/>:<Navigate to="/login"/>}
           />
 
           <Route path="/login"

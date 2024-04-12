@@ -37,8 +37,8 @@ const Login = props =>
             }
             else
             {
-                var user = {email: res.email ,firstname: res.firstname,lastname: res.lastname,password: res.password,phone: res.phone,username: res.username};
-                console.log(user)
+                var user = {level: res.level, university: res.university, email: res.email ,firstname: res.firstname,lastname: res.lastname,password: res.password,phone: res.phone,username: res.username};
+                console.log('user',user);
                 localStorage.setItem('logged_user', JSON.stringify(user));
                 props.loggedHandler(user);
                 setMessage('');

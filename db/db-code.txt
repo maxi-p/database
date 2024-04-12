@@ -33,6 +33,14 @@ CREATE TABLE Admin(
     FOREIGN KEY (username) REFERENCES User (username)
 );
 
+CREATE TABLE Pending_Admin(
+    username CHAR(15),
+    university_id INT NOT NULL,
+    PRIMARY KEY (username),
+    FOREIGN KEY (university_id) REFERENCES University (id),
+    FOREIGN KEY (username) REFERENCES User (username)
+);
+
 CREATE TABLE Student(
     username CHAR(15),
     university_id INT NOT NULL,

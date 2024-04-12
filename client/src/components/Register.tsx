@@ -1,26 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Route, {useNavigate} from 'react-router-dom';
 
 const Register = props =>
 {
     const navigate = useNavigate();
-
+    const [universities, setUniversities] = useState([]);
     const [formData, setFormData] = useState(
-        {email: "",firstname: "",lastname: "",password: "",phone: "",username: ""}
+        {email: "",firstname: "",lastname: "",password: "",phone: "",username: "", university:0}
     );
+
+    const unis = universities.map(uni => {
+        return (
+            <option key={uni.id} id={uni.id} value={uni.id}>{uni.name}</option>
+        )
+    });
 
     const handleChange = (event) =>{
         setFormData(prevFormData => {
-            const {id, value} = event.target;
-
+            const {id, value, type} = event.target;
+            const attr = type === "select"? "university":id;
             return {
                 ...prevFormData,
-                [id]: value
+                [attr]: value
             }
         });
-        
-
     };
+
+    useEffect(() => {
+        const getUniversities = async () => {
+            const response = await fetch('api/getUniversities', {method:'POST',body:"{}",headers:{'Content-Type': 'application/json'}});
+            var res = JSON.parse(await response.text());
+            setUniversities(res.universities)
+            setFormData(prevFormData => {
+                return {
+                    ...prevFormData,
+                    university: 1
+                }
+            });
+        };
+        getUniversities();
+    },[])
 
     const [message,setMessage] = useState('');
 
@@ -37,8 +56,7 @@ const Register = props =>
                 setMessage(res.message);
             else
             {
-                console.log(res)
-                var user = {email: res.email ,firstname: res.firstname,lastname: res.lastname,password: res.password,phone: res.phone,username: res.username};
+                var user = {level: res.level,university: res.university, email: res.email ,firstname: res.firstname,lastname: res.lastname,password: res.password,phone: res.phone,username: res.username};
                 console.log(user)
                 localStorage.setItem('logged_user', JSON.stringify(user));
                 props.loggedHandler(user);
@@ -106,6 +124,15 @@ const Register = props =>
                     value={formData.phone}
                     onChange={handleChange} 
                 />
+                <br/>
+                <select 
+                    id="university"
+                    value={formData.university}
+                    onChange={handleChange}
+                    name="university"    
+                >
+                    {unis}
+                </select>
                 <br/>
                 <input 
                     type="submit"
