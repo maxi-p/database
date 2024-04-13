@@ -106,8 +106,26 @@ def pendingAdmins():
     dbclose((mydb, my_cursor))
     return jsonify(res),201
 
+@app.route('/api/getPendingEvents', methods=['POST'])
+def pendingEvents():
+    mydb, my_cursor = dbconnect()
+    query = ("SELECT P.id, E.name, E.contact_username FROM Pending_Event P INNER JOIN Event E ON P.id=E.id")
+    my_cursor.execute(query)
+    
+    arr = []
+    for ret in my_cursor:
+        arr.append({'id':ret[0],'name':ret[1],'contact_username':ret[2]})
+    res = {'pendingEvents': arr, 'message':''}
+    if len(arr) == 0:
+        res['message'] = 'no pending events returned'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
 @app.route('/api/getEvent', methods=['POST'])
 def getEvent():
+    # SELECT E.id, E.name, C.name AS category_name, E.contact_username, E.timestamp, E.description, L.name AS location_name, L.latitude, L.longitude FROM Event E INNER JOIN Location L ON E.location_id=L.id INNER JOIN Event_Category C ON E.category_id=C.id
+    # INNER JOIN Public_Event U ON E.id=U.id
     res = {'message':''}
     mydb, my_cursor = dbconnect()
     try:
@@ -195,6 +213,8 @@ def getRso():
 
 @app.route('/api/getEvents', methods=['POST'])
 def getEvents():
+    # SELECT E.id, E.name, C.name AS category_name, E.contact_username, E.timestamp, E.description, L.name AS location_name, L.latitude, L.longitude FROM Event E INNER JOIN Location L ON E.location_id=L.id INNER JOIN Event_Category C ON E.category_id=C.id
+    # INNER JOIN Public_Event U ON E.id=U.id
     res = {'message':''}
     public_arr, private_arr, rso_arr = [],[],[]
     mydb, my_cursor = dbconnect()
@@ -347,6 +367,54 @@ def createRso():
     dbclose((mydb, my_cursor))
     return jsonify(res),201
 
+@app.route('/api/createEvent', methods=["POST"])
+def createEvent():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+    
+    location = ("INSERT INTO Location (name, latitude, longitude)"
+                 "VALUES  (%s, %s, %s)")
+    event = ("INSERT INTO Event (location_id, category_id, contact_username, name, timestamp, description)"
+             "VALUES (%s, %s, %s, %s, %s, %s)")
+    try:
+        mydb, my_cursor = dbconnect()
+        my_cursor.execute(location, (data['location_name'],data['latitude'],data['longitude']))
+        
+        lid = my_cursor.lastrowid
+        print("lid",lid)
+        if lid > 0:
+            my_cursor.execute(event, (lid, data['category'],data['contact_username'],data['name'],data['timestamp'],data['description']))
+            
+            eid = my_cursor.lastrowid
+            print("eid", eid)
+            if eid > 0:
+                if data['type'] == 'public':
+                    public = ("INSERT INTO Pending_Event (id) VALUES(%s)")
+                    my_cursor.execute(public, (eid,))
+                    res['message'] = 'public event inserted'
+                    res['eid'] = eid
+                    mydb.commit()
+                elif data['type'] == 'private':
+                    private = ("INSERT INTO Private_Event (id, university_id) VALUES(%s, %s)")
+                    my_cursor.execute(private, (eid, data['university']))
+                    res['message'] = 'private event inserted'
+                    res['eid'] = eid
+                    mydb.commit()
+                else: # RSO
+                    rso = ("INSERT INTO Rso_Event (id, rso_id) VALUES(%s, %s)")
+                    my_cursor.execute(rso, (eid, data['rso']))
+                    res['message'] = 'rso event inserted'
+                    res['eid'] = eid
+                    mydb.commit()
+
+    except Exception as e:
+        print(e)
+        res['message'] = 'There was an error'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
 @app.route('/api/getRsos', methods=["POST"])
 def getRsos():
     data=request.get_json()
@@ -411,12 +479,12 @@ def joinRSO():
         my_cursor.execute(join, (data['id'], data['username']))
         count = my_cursor.rowcount
         if count == 0 or data['username'] == '':
-            res['message'] = 'RSO was not joined'
+            res['message'] = 'error: RSO was not joined'
             dbclose((mydb, my_cursor))
             return jsonify(res),201
 
         mydb.commit() 
-        res['message'] = ''
+        res['message'] = 'Joined RSO '+ data['id']
     except:
         res['message'] = 'There was an error'
     
@@ -468,6 +536,48 @@ def decidePending():
         
         mydb.commit() 
         res['message'] = 'User '+data['username']+' was successfully accepted.'
+    except:
+        res['message'] = 'an error has occured'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
+@app.route('/api/decidePendingEvent', methods=["POST"])
+def decidePendingEvent():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+    
+    try:
+        mydb, my_cursor = dbconnect()
+        delete = ("DELETE FROM Pending_Event "
+                  "WHERE id=%s")
+        insert = ("INSERT INTO "
+                 "Public_Event(id) "
+                 "VALUES(%s)")
+
+        my_cursor.execute(delete, (data['id'],))
+        count = my_cursor.rowcount
+        if count == 0 or data['id'] == '':
+            res['message'] = 'pending event '+data['name']+' was not deleted from pending list'
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201
+        
+        if data['decision'] == 'reject':
+            res['message'] = 'Event '+data['name']+' was successfully rejected.'
+            mydb.commit() 
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201
+
+        my_cursor.execute(insert, (data['id'],))
+        count = my_cursor.rowcount
+        if count == 0 or data['id'] == '':
+            res['message'] = 'event '+ data['name']+' was not inserted into public event list'
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201
+        
+        mydb.commit() 
+        res['message'] = 'Event '+data['name']+' was successfully approved.'
     except:
         res['message'] = 'an error has occured'
     

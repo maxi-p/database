@@ -52,16 +52,7 @@ const Events = props =>
                 const response = await fetch('api/joinRso', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
                 var res = JSON.parse(await response.text());
                 console.log("join result",res)
-                if( res.message !== '' )
-                {
-                    props.setRsoMessage(res.message);
-                }
-                else
-                {
-                    props.setRsoMessage('');
-
-                }
-    
+                props.setRsoMessage(res.message);
             }
             catch(e){
                 console.log(json)

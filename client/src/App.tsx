@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DetailsPage from './pages/DetailsPage';
 import CreateRso from './components/CreateRso';
+import CreateEvent from './components/CreateEvent';
 
 const  App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(isLogged());
@@ -45,6 +46,11 @@ const  App = () => {
           <Route path="/create-rso"
             index
             element={isLoggedIn? <CreateRso loggedUser={isLoggedIn}   loggedHandler={loggedHandler}/> : <Navigate to="/login"/>}
+          />
+
+          <Route path="/create-event"
+            index
+            element={isLoggedIn? <CreateEvent loggedUser={isLoggedIn}   loggedHandler={loggedHandler}/> : <Navigate to="/login"/>}
           />
 
           <Route path="/login"

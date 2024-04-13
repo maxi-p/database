@@ -6,6 +6,7 @@ const UserHome = props =>
     const navigate = useNavigate();
     const [message, setMessage] = useState("");
     const [requests, setRequests] = useState([]);
+    const [pendingEvents, setPendingEvents] = useState([]);
     const [rsoList, setRsoList] = useState([]);
 
     useEffect(() => {
@@ -13,6 +14,15 @@ const UserHome = props =>
             const response = await fetch('api/getPendingAdmins', {method:'POST',body:"{}",headers:{'Content-Type': 'application/json'}});
             var res = JSON.parse(await response.text());
             setRequests(res.pendingAdmins)
+        };
+        getPendingAdmins();
+    },[message])
+
+    useEffect(() => {
+        const getPendingAdmins = async () => {
+            const response = await fetch('api/getPendingEvents', {method:'POST',body:"{}",headers:{'Content-Type': 'application/json'}});
+            var res = JSON.parse(await response.text());
+            setPendingEvents(res.pendingEvents)
         };
         getPendingAdmins();
     },[message])
@@ -39,6 +49,28 @@ const UserHome = props =>
         try
         {
             const response = await fetch('api/decidePending', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
+            var res = JSON.parse(await response.text());
+            setMessage(res.message);
+        }
+        catch(e){
+            alert(e.toString());
+            console.log(e.toString());
+            return;
+        }
+    };
+
+    const decideEventRequest = async event => {
+        event.preventDefault();
+        const obj = { 
+            decision: event.target.value,
+            id: event.target.id,
+            name: event.target.name
+        }
+
+        var json = JSON.stringify(obj);
+        try
+        {
+            const response = await fetch('api/decidePendingEvent', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
             var res = JSON.parse(await response.text());
             setMessage(res.message);
         }
@@ -89,6 +121,29 @@ const UserHome = props =>
         )
     });
 
+    const eventReqs = pendingEvents.map(request => {
+        return (
+            <li key={request.id}>
+                <input
+                    type="button" 
+                    id={request.id} 
+                    name={request.name}  
+                    value="accept"
+                    onClick={decideEventRequest}
+                />
+                <input
+                    type="button" 
+                    id={request.id} 
+                    name={request.name} 
+                    value="reject"
+                    onClick={decideEventRequest}
+                />
+                <h5>Event: {request.name}</h5> 
+                <h5>Contact username: {request.contact_username}</h5>
+            </li>
+        )
+    });
+
     const requestToBeAdmin = async () =>
     {
         console.log(props.loggedUser)
@@ -120,9 +175,21 @@ const UserHome = props =>
         <br/>
         <br/>
         {props.loggedUser && props.loggedUser.level === 'super_admin' && 
-        (<ul>
-            {reqs}
-        </ul>)}
+        (<div>
+            <h3>
+                Pending Public Event Requests:
+            </h3>
+            <ul>
+                {eventReqs}
+            </ul><br/>
+            <h3>
+                Pending Admin Requests:
+            </h3>
+            <ul>
+                {reqs}
+            </ul>
+        </div>
+        )}
         {props.loggedUser && 
         (<>
             RSOs:<br/>
