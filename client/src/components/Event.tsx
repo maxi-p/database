@@ -2,7 +2,7 @@ import React from 'react'
 
 const Event = props => {
   return (
-    <li>{props.name}</li>
+    <li key={props.name} >{props.name}</li>
   )
 }
 

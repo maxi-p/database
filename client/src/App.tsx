@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import  UserHomePage  from './pages/UserHomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import EventDetails from './components/EventDetails';
 
 const  App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(isLogged());
@@ -19,10 +20,16 @@ const  App = () => {
       <BrowserRouter>
         <NavBar loggedUser={isLoggedIn} loggedHandler={loggedHandler}/>
         <Routes>
-          <Route path="/"
-            index
-            element={isLoggedIn? <HomePage loggedHandler={loggedHandler} loggedUser={isLoggedIn}/>:<Navigate to="/login"/>}
-          />
+          <Route path="/">
+            <Route            
+              index
+              element={isLoggedIn? <HomePage loggedHandler={loggedHandler} loggedUser={isLoggedIn}/>:<Navigate to="/login"/>}
+            />
+            <Route
+              path=":id"
+              element={<EventDetails loggedUser={isLoggedIn}/>}
+            />
+          </Route>
 
           <Route path="/home"
             index
