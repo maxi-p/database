@@ -9,7 +9,7 @@ const Events = props =>
     const publicEvents = props.publicEvents.map(publicEvent => {
         // console.log(publicEvent.name)
         return (
-            <Link to={publicEvent.id.toString()} key={publicEvent.name}>
+            <Link to={"/eve="+publicEvent.id.toString()} key={publicEvent.name}>
                 <Event
                     key={publicEvent.name}
                     name={publicEvent.name}    
@@ -21,7 +21,7 @@ const Events = props =>
     const privateEvents = props.privateEvents.map(privateEvent => {
         // console.log(privateEvent.name)
         return (
-            <Link to={privateEvent.id.toString()} key={privateEvent.name}>
+            <Link to={"/eve="+privateEvent.id.toString()} key={privateEvent.name}>
                 <Event
                     key={privateEvent.name}
                     name={privateEvent.name}
@@ -33,7 +33,7 @@ const Events = props =>
     const rsoEvents = props.rsoEvents.map(rsoEvent => {
         // console.log(rsoEvent.name)
         return (
-            <Link to={rsoEvent.id.toString()} key={rsoEvent.name}>
+            <Link to={"/eve="+rsoEvent.id.toString()} key={rsoEvent.name}>
                 <Event
                     key={rsoEvent.name}
                     name={rsoEvent.name}

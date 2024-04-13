@@ -59,6 +59,24 @@ const NavBar = props => {
         >User Home</a>
       </li>)
       }
+      {props.loggedUser &&
+      (<li className='li'>
+        <a 
+          className=""
+          onClick={nav}
+          name='create-rso'
+        >Create RSO</a>
+      </li>)
+      }
+      {props.loggedUser &&
+      (<li className='li'>
+        <a 
+          className=""
+          onClick={nav}
+          name='create-event'
+        >Create Event</a>
+      </li>)
+      }
         
     </ul>
   )

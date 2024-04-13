@@ -106,6 +106,131 @@ def pendingAdmins():
     dbclose((mydb, my_cursor))
     return jsonify(res),201
 
+@app.route('/api/getEvent', methods=['POST'])
+def getEvent():
+    res = {'message':''}
+    mydb, my_cursor = dbconnect()
+    try:
+        data=request.get_json()
+        print(data)
+
+        public = ("SELECT * FROM Public_Event INNER JOIN Event ON Public_Event.id=Event.id WHERE Public_Event.id=%s")
+        private = ("SELECT * FROM Private_Event INNER JOIN Event ON Private_Event.id=Event.id WHERE Private_Event.id=%s")
+        rso = ("SELECT * FROM Rso_Event INNER JOIN Event ON Rso_Event.id=Event.id WHERE Rso_Event.id=%s")
+
+        eid = -1
+        resEvent = {}
+
+        my_cursor.execute(public, (data['id'],))
+        for ret in my_cursor:
+            resEvent = {'id':ret[0],'location_id':ret[2],'category_id':ret[3],'contact_username':ret[4],'name':ret[5],'timestamp':ret[6],'description':ret[7]}
+            eid = ret[0]
+        if eid != -1:
+            res['event'] = resEvent
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201 
+
+        my_cursor.execute(private,(data['id'],))
+        for ret in my_cursor:
+            resEvent = {'id':ret[0],'university_id':ret[1],'location_id':ret[3],'category_id':ret[4],'contact_username':ret[5],'name':ret[6],'timestamp':ret[7],'description':ret[8]}
+            eid = ret
+        if eid != -1:
+            res['event'] = resEvent
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201 
+        
+        my_cursor.execute(rso,(data['id'],))
+        for ret in my_cursor:
+            resEvent = {'id':ret[0],'rso_id':ret[1],'location_id':ret[3],'category_id':ret[4],'contact_username':ret[5],'name':ret[6],'timestamp':ret[7],'description':ret[8]}
+            eid = ret
+        if eid != -1:
+            res['event'] = resEvent
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201 
+
+        
+    except:
+        dbclose((mydb, my_cursor))
+        res['message'] = 'There has been an error'
+
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201 
+
+@app.route('/api/getRso', methods=['POST'])
+def getRso():
+    res = {'message':''}
+    mydb, my_cursor = dbconnect()
+    try:
+        data=request.get_json()
+        # print(data)
+
+        query = ("SELECT * FROM Rso WHERE Rso.id=%s")
+        participants = ("SELECT student_username FROM Participates WHERE Participates.rso_id=%s")
+
+        rso = {}
+        members = []
+        rid = -1
+        my_cursor.execute(query, (data['id'],))
+        for ret in my_cursor:
+            # print(ret)
+            rso = {'id':ret[0],'owner_username':ret[1],'name':ret[2],'status':ret[3]}
+            rid = ret[2]
+        if rid != -1:
+            my_cursor.execute(participants, (data['id'],))
+            for (student_username,) in my_cursor:
+                members.append(student_username)
+        else:
+            dbclose((mydb, my_cursor))
+            res['message'] = 'RSO not found'
+            return jsonify(res),201
+        rso['participants'] = members
+        res['rso'] = rso 
+        print(res)
+    except:
+        dbclose((mydb, my_cursor))
+        res['message'] = 'There has been an error'
+
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201 
+
+@app.route('/api/getEvents', methods=['POST'])
+def getEvents():
+    res = {'message':''}
+    public_arr, private_arr, rso_arr = [],[],[]
+    mydb, my_cursor = dbconnect()
+    try:
+        data=request.get_json()
+        print(data)
+
+        public = ("SELECT * FROM Public_Event INNER JOIN Event ON Public_Event.id=Event.id")
+        private = ("SELECT * FROM Private_Event INNER JOIN Event ON Private_Event.id=Event.id INNER JOIN (SELECT university_id FROM Student WHERE username=%s) AS T ON Private_Event.university_id=T.university_id;")
+        rso = ("SELECT * FROM RSO_Event INNER JOIN Event ON RSO_Event.id=Event.id INNER JOIN (SELECT rso_id FROM Participates WHERE student_username=%s) AS T ON RSO_Event.rso_id=T.rso_id;")
+
+        if data['public'] == True:
+            my_cursor.execute(public)
+            for ret in my_cursor:
+                public_arr.append({'id':ret[0],'location_id':ret[2],'category_id':ret[3],'contact_username':ret[4],'name':ret[5],'timestamp':ret[6],'description':ret[7]})
+
+        if data['private'] == True:
+            my_cursor.execute(private,(data['username'],))
+            for ret in my_cursor:
+                private_arr.append({'id':ret[0],'university_id':ret[1],'location_id':ret[3],'category_id':ret[4],'contact_username':ret[5],'name':ret[6],'timestamp':ret[7],'description':ret[8]})
+
+        if data['rso'] == True:
+            my_cursor.execute(rso,(data['username'],))
+            for ret in my_cursor:
+                rso_arr.append({'id':ret[0],'rso_id':ret[1],'location_id':ret[3],'category_id':ret[4],'contact_username':ret[5],'name':ret[6],'timestamp':ret[7],'description':ret[8]})
+
+        res['public_event'] = public_arr
+        res['private_event'] = private_arr
+        res['rso_event'] = rso_arr
+    except:
+        dbclose((mydb, my_cursor))
+        res['message'] = 'There has been an error'
+
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201 
+
 @app.route('/api/requestToBeAdmin', methods=["POST"])
 def requestToBeAdmin():
     data=request.get_json()
@@ -129,6 +254,27 @@ def requestToBeAdmin():
             return jsonify(res),201
         mydb.commit() 
         res['message'] = 'request has been sent'
+    except:
+        res['message'] = 'an error has occured'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
+@app.route('/api/getRsos', methods=["POST"])
+def getRsos():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+    rsos = []
+
+    try:
+        mydb, my_cursor = dbconnect()
+        query = ("SELECT * from Participates INNER JOIN Rso ON Rso.id=Participates.rso_id WHERE Participates.student_username=%s")
+
+        my_cursor.execute(query, (data['username'],))
+        for ret in my_cursor:
+            rsos.append({'id':ret[2],'owner_username':ret[3],'name':ret[4],'status':ret[5]})
+        res['rsos'] = rsos
     except:
         res['message'] = 'an error has occured'
     

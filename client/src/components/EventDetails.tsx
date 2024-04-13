@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
 import DeleteEvent from './DeleteEvent'
 
 const EventDetails = props => {
-    const { id } = useParams();
+    const id  = props.id;
     const [event, setEvent] = useState({});
     const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         const getEvent = async() => {
+            console.log("iddd",id)
             const json = JSON.stringify({ id: id});
             const response = await fetch('api/getEvent', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
             var res = JSON.parse(await response.text());

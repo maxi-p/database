@@ -8,6 +8,8 @@ import  UserHomePage  from './pages/UserHomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import EventDetails from './components/EventDetails';
+import RsoDetails from './components/RsoDetails';
+import DetailsPage from './pages/DetailsPage';
 
 const  App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(isLogged());
@@ -27,7 +29,7 @@ const  App = () => {
             />
             <Route
               path=":id"
-              element={<EventDetails loggedUser={isLoggedIn}/>}
+              element={isLoggedIn? <DetailsPage loggedUser={isLoggedIn}/>:<Navigate to="/login"/>}
             />
           </Route>
 

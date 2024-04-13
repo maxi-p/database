@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Route, {useNavigate} from 'react-router-dom';
+import Route, {Link, useNavigate} from 'react-router-dom';
 
 const UserHome = props =>
 {
     const navigate = useNavigate();
     const [message, setMessage] = useState("");
     const [requests, setRequests] = useState([]);
+    const [rsoList, setRsoList] = useState([]);
 
     useEffect(() => {
         const getPendingAdmins = async () => {
@@ -15,6 +16,18 @@ const UserHome = props =>
         };
         getPendingAdmins();
     },[message])
+
+    useEffect(() => {
+        const getRsos = async () => {
+            const json = JSON.stringify({username: props.loggedUser.username});
+            const response = await fetch('api/getRsos', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
+            var res = JSON.parse(await response.text());
+            console.log(res);
+            setRsoList(res.rsos);
+        };
+        getRsos();
+    },[message])
+
     const decideRequest = async event => {
         event.preventDefault();
         const obj = { 
@@ -43,6 +56,16 @@ const UserHome = props =>
         props.loggedHandler(null);
         navigate('/login');
     };
+
+    const rsos = rsoList.map(rso => {
+        return (
+            <Link to={"/rso="+rso.id.toString()} key={rso.id}>
+                <li key={rso.id}>
+                    {rso.name}
+                </li>
+            </Link>
+        )
+    });
 
     const reqs = requests.map(request => {
         return (
@@ -99,8 +122,14 @@ const UserHome = props =>
         {props.loggedUser && props.loggedUser.level === 'super_admin' && 
         (<ul>
             {reqs}
-        </ul>)
-        }
+        </ul>)}
+        {props.loggedUser && 
+        (<>
+            RSOs:<br/>
+            <ul>
+                {rsos}
+            </ul>
+        </>)}
       </div>
     );
 };
