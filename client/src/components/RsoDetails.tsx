@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const RsoDetails = props => {
     const id  = props.id;
     const [rso, setRso] = useState({});
     const [message, setMessage] = useState('wait');
+    const [deleteMessage, setDeleteMessage] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getRso = async() => {
@@ -29,9 +32,27 @@ const RsoDetails = props => {
       })
     }
 
+    const leaveHandler = () => {
+        const leaveRso = async() => {
+            const json = JSON.stringify({ id: id, username: props.loggedUser.username});
+            const response = await fetch('/api/leaveRso', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
+            var res = JSON.parse(await response.text());
+            console.log('res ',res)
+            if(res.message === ''){
+                setDeleteMessage('')
+                navigate('/user-home')
+            }
+          else{
+            setDeleteMessage(res.message);
+          }
+        }
+        leaveRso();
+    }
+
     return (
         <div>
             {message !== '' && <span>{message}</span>}
+            {deleteMessage !== '' && <span>{deleteMessage}</span>}
             {message === '' && (<div className="post-detail-container">
                 <section className='post-details'>
                     <h1>{rso.name}</h1>
@@ -44,6 +65,13 @@ const RsoDetails = props => {
                         </div>
                         <p className="card--title">Owner User: {rso.owner_username}</p>
                         <p className="card--title">Status: {rso.status}</p>
+                        <input
+                            type="button" 
+                            id="leave" 
+                            className="buttons" 
+                            value="Leave RSO"
+                            onClick={leaveHandler}
+                        />
                         <p className="card--price"><span className="bold">Participants:</span></p><br/>
                         <ul>
                           {parts}  

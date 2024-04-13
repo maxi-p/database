@@ -260,6 +260,93 @@ def requestToBeAdmin():
     dbclose((mydb, my_cursor))
     return jsonify(res),201
 
+@app.route('/api/leaveRso', methods=["POST"])
+def leaveRso():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+
+
+    mydb, my_cursor = dbconnect()
+    admin_check = ("SELECT * FROM RSO WHERE "
+             "id=%s AND owner_username=%s")
+    delete = ("DELETE FROM Participates WHERE "
+             "rso_id=%s AND student_username=%s")
+    
+    my_cursor.execute(admin_check, (data['id'],data['username']))         
+    count = 0
+    for found_admin in my_cursor:
+        count = 1
+    print("admin count ",count)
+    my_cursor.fetchall()
+    if count != 0:
+        res['message'] = 'You are the admin in this RSO'
+        dbclose((mydb, my_cursor))
+        return jsonify(res),201
+    my_cursor.execute(delete, (data['id'],data['username']))
+    count = my_cursor.rowcount
+    my_cursor.fetchall()
+    print(count)
+    if count == 0 or data['username'] == '':
+        res['message'] = 'user was not removed from RSO'
+        dbclose((mydb, my_cursor))
+        return jsonify(res),201
+    mydb.commit() 
+    res['message'] = ''
+    # except:
+    #     res['message'] = 'There was an error'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
+@app.route('/api/createRso', methods=["POST"])
+def createRso():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+    
+    try:
+        mydb, my_cursor = dbconnect()
+        query = ("INSERT INTO RSO (owner_username, name, status)"
+                 "VALUES  (%s, %s, 'inact')")
+        join = ("INSERT INTO Participates (rso_id, student_username)"
+                 "VALUES  (%s, %s)")
+        rid = -1
+        my_cursor.execute(query, (data['owner_username'],data['name']))
+        count = my_cursor.rowcount
+        print(count)
+        if count == 0 or data['name'] == '':
+            res['message'] = 'request was not executed'
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201
+
+        rid = my_cursor.lastrowid
+        print(rid)
+        my_cursor.execute(join, (rid, data['owner_username']))
+        count = my_cursor.rowcount
+        if count == 0 or data['owner_username'] == '':
+            res['message'] = 'request was not executed'
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201
+
+        if data['username1'] != '':
+            my_cursor.execute(join, (rid, data['username1']))
+        if data['username2'] != '':
+            my_cursor.execute(join, (rid, data['username2']))
+        if data['username3'] != '':
+            my_cursor.execute(join, (rid, data['username3']))
+        if data['username4'] != '':
+            my_cursor.execute(join, (rid, data['username4']))
+
+        mydb.commit() 
+        res['message'] = ''
+        res['id'] = rid
+    except:
+        res['message'] = 'There was an error'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
 @app.route('/api/getRsos', methods=["POST"])
 def getRsos():
     data=request.get_json()
@@ -277,6 +364,61 @@ def getRsos():
         res['rsos'] = rsos
     except:
         res['message'] = 'an error has occured'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
+@app.route('/api/getAllRsos', methods=["POST"])
+def getAllRsos():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+    rsos = []
+    myRsos = []
+
+    try:
+        mydb, my_cursor = dbconnect()
+        query = ("SELECT * FROM RSO R WHERE NOT EXISTS (SELECT * FROM Participates P WHERE P.rso_id=R.id AND P.student_username=%s)")
+        myQuery = ("SELECT * from Participates INNER JOIN Rso ON Rso.id=Participates.rso_id WHERE Participates.student_username=%s")
+
+        my_cursor.execute(query, (data['username'],))
+        for ret in my_cursor:
+            rsos.append({'id':ret[0],'owner_username':ret[1],'name':ret[2],'status':ret[3]})
+        res['rsos'] = rsos
+        
+        my_cursor.execute(myQuery, (data['username'],))
+        for ret in my_cursor:
+            myRsos.append({'id':ret[2],'owner_username':ret[3],'name':ret[4],'status':ret[5]})
+        res['myRsos'] = myRsos
+
+    except:
+        res['message'] = 'an error has occured'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
+@app.route('/api/joinRso', methods=["POST"])
+def joinRSO():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+    
+    try:
+        mydb, my_cursor = dbconnect()
+        join = ("INSERT INTO Participates (rso_id, student_username) "
+                 "VALUES  (%s, %s)")
+        
+        my_cursor.execute(join, (data['id'], data['username']))
+        count = my_cursor.rowcount
+        if count == 0 or data['username'] == '':
+            res['message'] = 'RSO was not joined'
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201
+
+        mydb.commit() 
+        res['message'] = ''
+    except:
+        res['message'] = 'There was an error'
     
     dbclose((mydb, my_cursor))
     return jsonify(res),201

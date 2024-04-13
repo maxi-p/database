@@ -42,16 +42,73 @@ const Events = props =>
         )
     });
 
+    const joinHandler = async event => 
+        {
+            event.preventDefault();
+            var json = JSON.stringify({id: event.target.id, username: props.loggedUser.username});
+    
+            try
+            {
+                const response = await fetch('api/joinRso', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
+                var res = JSON.parse(await response.text());
+                console.log("join result",res)
+                if( res.message !== '' )
+                {
+                    props.setRsoMessage(res.message);
+                }
+                else
+                {
+                    props.setRsoMessage('');
+
+                }
+    
+            }
+            catch(e){
+                console.log(json)
+                alert(e.toString());
+                return;
+            }
+        };
+
+    const rsolist = props.rsos.map(rso => {
+        // console.log(rso)
+        return (
+                <li key={rso.name}> 
+                    <input
+                        type="button" 
+                        id={rso.id} 
+                        className="buttons" 
+                        value="Join"
+                        onClick={joinHandler}
+                    />
+                    {rso.name}
+                </li>
+        )
+    });
+
+    const myrsolist = props.myRsos.map(myrso => {
+        // console.log(rso)
+        return (
+                <li key={myrso.name}> 
+                    {myrso.name}
+                </li>
+        )
+    });
+
     return (<div className="post-detail-container">
-            <span>Events:</span><br /><br />
-            <section className="posts-list">
-                <ul>
-                    {publicEvents}
-                    {privateEvents}
-                    {rsoEvents}
-                </ul>
-            </section>
-        </div>)
+                <span>{props.rsoMessage}</span>
+                <br/><span>Events:</span><br/>
+                    <ul>
+                        {publicEvents}
+                        {privateEvents}
+                        {rsoEvents}
+                    </ul><br/>
+                <span>Rso:</span><br />
+                    <ul>
+                        {rsolist}
+                        {myrsolist}
+                    </ul>
+            </div>)
 };
 
 export default Events;

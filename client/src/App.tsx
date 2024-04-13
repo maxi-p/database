@@ -7,9 +7,8 @@ import HomePage from './pages/HomePage';
 import  UserHomePage  from './pages/UserHomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import EventDetails from './components/EventDetails';
-import RsoDetails from './components/RsoDetails';
 import DetailsPage from './pages/DetailsPage';
+import CreateRso from './components/CreateRso';
 
 const  App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(isLogged());
@@ -41,6 +40,11 @@ const  App = () => {
           <Route path="/user-home"
             index
             element={isLoggedIn? <UserHomePage loggedHandler={loggedHandler} loggedUser={isLoggedIn}/>:<Navigate to="/login"/>}
+          />
+
+          <Route path="/create-rso"
+            index
+            element={isLoggedIn? <CreateRso loggedUser={isLoggedIn}   loggedHandler={loggedHandler}/> : <Navigate to="/login"/>}
           />
 
           <Route path="/login"
