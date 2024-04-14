@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import EventDetails from '../components/EventDetails';
 import RsoDetails from '../components/RsoDetails';
+import EventDetailsPage from './EventDetailsPage';
 
 const DetailsPage = props => {
     const navigate = useNavigate();
@@ -14,7 +13,7 @@ const DetailsPage = props => {
         component = <RsoDetails loggedUser={props.loggedUser} id={newId}/>
     }
     else if(id?.includes("eve")){
-        component = <EventDetails loggedUser={props.loggedUser} id={newId}/>
+        component = <EventDetailsPage loggedUser={props.loggedUser} id={newId}/>
     }
     else{
         console.log("yes")

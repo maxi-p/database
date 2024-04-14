@@ -25,6 +25,7 @@ def dbclose(tuple):
 def index(path):
     return send_from_directory('./client/dist/','index.html')
 
+
 @app.route('/assets/<file>')
 def js_css(file):
     return send_from_directory('./client/dist/assets/',file)
@@ -73,6 +74,39 @@ def login():
 
     dbclose((mydb, my_cursor))
     return jsonify(res),201   
+
+@app.route('/api/getComments', methods=['POST'])
+def getComments():
+    data=request.get_json()
+    mydb, my_cursor = dbconnect()
+    query = ("SELECT * FROM Commented WHERE event_id = %s")
+
+    arr = []
+    my_cursor.execute(query, (data['event_id'],))
+    for ret in my_cursor:
+        arr.append({'id':ret[0],'event_id':ret[1],'student_username':ret[2],'text':ret[3], 'timestamp': ret[4]})
+    res = {'comments': arr, 'message':''}
+    if len(arr) == 0:
+        res['message'] = 'no comments on this event yet...'
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
+@app.route('/api/addComment', methods=['POST'])
+def addComment():
+    data=request.get_json()
+    mydb, my_cursor = dbconnect()
+    insert = ("INSERT INTO Commented (event_id, student_username, text, timestamp)"
+              "VALUES (%s, %s, %s, %s)")
+
+    my_cursor.execute(insert, (data['event_id'],data['student_username'],data['text'],data['timestamp']))
+    lastrowid = my_cursor.lastrowid
+    if lastrowid != 0:
+        res = {'message':'comment '+ str(lastrowid) +' was posted'}
+        mydb.commit()
+    else:
+        res['message'] = 'comment was not posted'
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
 
 @app.route('/api/getUniversities', methods=['POST'])
 def universities():
