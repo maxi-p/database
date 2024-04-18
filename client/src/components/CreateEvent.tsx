@@ -42,6 +42,7 @@ const CreateRso = props =>
         })
     };
     const handleRso = (event) => {
+        console.log()
         setFormRSO(prevFormData => {
             return {
                 ...prevFormData,
@@ -57,6 +58,34 @@ const CreateRso = props =>
             }
         })
     };
+
+    const setTimestamp = (timestamp1,kind) => {
+        if(kind === 'public'){
+            setFormPublic(prevFormData => {
+                return {
+                    ...prevFormData,
+                    timestamp: timestamp1
+                }
+            })
+        }
+        else if(kind === 'private'){
+            setFormPrivate(prevFormData => {
+                return {
+                    ...prevFormData,
+                    timestamp: timestamp1
+                }
+            }) 
+        }
+        else if(kind === 'rso'){
+            setFormRSO(prevFormData => {
+                return {
+                    ...prevFormData,
+                    timestamp: timestamp1
+                }
+            }) 
+        }
+        
+    }
 
 
     const createEvent = async arg =>
@@ -86,20 +115,23 @@ const CreateRso = props =>
 
     return(
         <div id="uploadPostDiv">
-            <span id="inner-title">Enter Your Event Type</span><br />
-                <select 
-                    id="favColor"
-                    value={eventType}
-                    onChange={handleType}
-                    name="eventType"
-                >
-                    <option value="public">Public</option>
-                    <option value="private">Private</option>
-                    <option value="rso">RSO</option>
-                </select>
-            {eventType === 'public' && <PublicEventForm loggedUser={props.loggedUser} formPublic={formPublic} setFormPublic={handlePublic} createEvent={createEvent}/>}
-            {eventType === 'private' && <PrivateEventForm loggedUser={props.loggedUser} formPrivate={formPrivate} setFormPrivate={handlePrivate} createEvent={createEvent} setUni={setUni}/>}
-            {eventType === 'rso' && <RsoEventForm loggedUser={props.loggedUser} formRso={formRSO} setFormRso={handleRso} createEvent={createEvent} setRso={setRso}/>}
+                <span className="bold" id="inner-title">Enter Your Event Type</span><br />
+                <div>
+                    <select
+                        style={{width: "100px", marginBottom:"10px"}} 
+                        id="favColor"
+                        value={eventType}
+                        onChange={handleType}
+                        name="eventType"
+                        >
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                        <option value="rso">RSO</option>
+                    </select>
+                </div>
+            {eventType === 'public' && <PublicEventForm loggedUser={props.loggedUser} formPublic={formPublic} setFormPublic={handlePublic} createEvent={createEvent} setTimestamp={setTimestamp}/>}
+            {eventType === 'private' && <PrivateEventForm loggedUser={props.loggedUser} formPrivate={formPrivate} setFormPrivate={handlePrivate} createEvent={createEvent} setUni={setUni} setTimestamp={setTimestamp}/>}
+            {eventType === 'rso' && <RsoEventForm loggedUser={props.loggedUser} formRso={formRSO} setFormRso={handleRso} createEvent={createEvent} setRso={setRso} setTimestamp={setTimestamp}/>}
             <span id="postResult">{message}</span>
         </div>
     );

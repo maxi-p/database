@@ -1,7 +1,5 @@
-import {useState, useEffect} from 'react';
 import {Routes, Route, BrowserRouter, Navigate} from 'react-router-dom'
 import './app.css';
-import isLogged from './logic/isLoggedIn';
 import NavBar from './components/NabBar';
 import HomePage from './pages/HomePage';
 import  UserHomePage  from './pages/UserHomePage';
@@ -10,26 +8,25 @@ import RegisterPage from './pages/RegisterPage';
 import DetailsPage from './pages/DetailsPage';
 import CreateRso from './components/CreateRso';
 import CreateEvent from './components/CreateEvent';
+import useLoggedUser from './hooks/useLoggedUser';
+import RSOPage from './pages/RSOPage';
 
 const  App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(isLogged());
+  const { loggedUser, setLoggedUser} = useLoggedUser();
 
-  const loggedHandler = data => {
-    setIsLoggedIn(data);
-  }
   return (
     <>
       <BrowserRouter>
-        <NavBar loggedUser={isLoggedIn} loggedHandler={loggedHandler}/>
+        <NavBar loggedUser={loggedUser} loggedHandler={setLoggedUser}/>
         <Routes>
           <Route path="/">
             <Route            
               index
-              element={isLoggedIn? <HomePage loggedHandler={loggedHandler} loggedUser={isLoggedIn}/>:<Navigate to="/login"/>}
+              element={loggedUser? <HomePage loggedHandler={setLoggedUser} loggedUser={loggedUser}/>:<Navigate to="/login"/>}
             />
             <Route
               path=":id"
-              element={isLoggedIn? <DetailsPage loggedUser={isLoggedIn}/>:<Navigate to="/login"/>}
+              element={loggedUser? <DetailsPage loggedUser={loggedUser}/>:<Navigate to="/login"/>}
             />
           </Route>
 
@@ -38,29 +35,34 @@ const  App = () => {
             element={<Navigate to="/"/>}
           />
 
+          <Route path="/rso"
+            index
+            element={loggedUser? <RSOPage loggedHandler={setLoggedUser} loggedUser={loggedUser}/>:<Navigate to="/login"/>}
+          />
+
           <Route path="/user-home"
             index
-            element={isLoggedIn? <UserHomePage loggedHandler={loggedHandler} loggedUser={isLoggedIn}/>:<Navigate to="/login"/>}
+            element={loggedUser? <UserHomePage loggedHandler={setLoggedUser} loggedUser={loggedUser}/>:<Navigate to="/login"/>}
           />
 
           <Route path="/create-rso"
             index
-            element={isLoggedIn? <CreateRso loggedUser={isLoggedIn}   loggedHandler={loggedHandler}/> : <Navigate to="/login"/>}
+            element={loggedUser? <CreateRso loggedUser={loggedUser}  loggedHandler={setLoggedUser}/> : <Navigate to="/login"/>}
           />
 
           <Route path="/create-event"
             index
-            element={isLoggedIn? <CreateEvent loggedUser={isLoggedIn}   loggedHandler={loggedHandler}/> : <Navigate to="/login"/>}
+            element={loggedUser? <CreateEvent loggedUser={loggedUser}  loggedHandler={setLoggedUser}/> : <Navigate to="/login"/>}
           />
 
           <Route path="/login"
             index
-            element={!isLoggedIn? <LoginPage loggedHandler={loggedHandler}/>: <Navigate to="/user-home"/>}
+            element={!loggedUser? <LoginPage loggedHandler={setLoggedUser}/>: <Navigate to="/user-home"/>}
           />
 
           <Route path="/register"
             index
-            element={!isLoggedIn? <RegisterPage loggedHandler={loggedHandler}/> : <Navigate to="/user-home"/>}
+            element={!loggedUser? <RegisterPage loggedHandler={setLoggedUser}/> : <Navigate to="/user-home"/>}
           />
         </Routes>
 

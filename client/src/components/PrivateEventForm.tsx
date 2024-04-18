@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import SelectTime from './SelectTime';
 
 const PrivateEventForm = props => {
     const [universities, setUniversities] = useState([]);
@@ -19,7 +20,9 @@ const PrivateEventForm = props => {
     });
 
     return (<div>
-                <form onSubmit={event => {
+                <form
+                className='uploadPostInner'
+                onSubmit={event => {
                     event.preventDefault();
                     props.createEvent('private')}
                 }>
@@ -55,12 +58,10 @@ const PrivateEventForm = props => {
                         name="contact_username"
                         value={props.formPrivate.contact_username}
                     /><br/>
-                    <input
-                        type="text"
-                        placeholder="Timestamp"
-                        onChange={props.setFormPrivate}
-                        name="timestamp"
-                        value={props.formPrivate.timestamp}
+                    <SelectTime 
+                        setForm={props.setFormPrivate}
+                        setTimestamp={props.setTimestamp}
+                        kind='private'
                     /><br/>
                     <input
                         type="text"

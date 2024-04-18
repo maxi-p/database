@@ -1,9 +1,10 @@
 import React from 'react'
+import SelectTime from './SelectTime';
 
 const PublicEventForm = props => {
     // {name:'',category:'',contact_username:'', timestamp:'', description:'', location_name:'', latitude:'',longitude:''}
     return (<div>
-                <form onSubmit={event => {
+                <form className='uploadPostInner' onSubmit={event => {
                     event.preventDefault();
                     props.createEvent('public')}
                 }>
@@ -31,13 +32,12 @@ const PublicEventForm = props => {
                     name="contact_username"
                     value={props.formPublic.contact_username}
                 /><br/>
-                <input
-                    type="text"
-                    placeholder="Timestamp"
-                    onChange={props.setFormPublic}
-                    name="timestamp"
-                    value={props.formPublic.timestamp}
-                /><br/>
+                <SelectTime 
+                    setForm={props.setFormPublic}
+                    setTimestamp={props.setTimestamp}
+                    kind='public'
+                />
+                <br/>
                 <input
                     type="text"
                     placeholder="Description"

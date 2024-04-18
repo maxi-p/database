@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import SelectTime from './SelectTime';
 
 const RsoEventForm = props => {
     const [rsoList, setRsoList] = useState([]);
@@ -28,10 +29,13 @@ const RsoEventForm = props => {
 
 
     return (<div>
-        <form onSubmit={event => {
-            event.preventDefault();
-            props.createEvent('rso')}
-        }>
+        <form 
+            onSubmit={event => {
+                event.preventDefault();
+                props.createEvent('rso')}
+            }
+            className='uploadPostInner'
+        >
             <input
                 type="text"
                 placeholder="Event Name"
@@ -64,12 +68,10 @@ const RsoEventForm = props => {
                 name="contact_username"
                 value={props.formRso.contact_username}
             /><br/>
-            <input
-                type="text"
-                placeholder="Timestamp"
-                onChange={props.setFormRso}
-                name="timestamp"
-                value={props.formRso.timestamp}
+            <SelectTime 
+                setForm={props.setFormRso}
+                setTimestamp={props.setTimestamp}
+                kind='rso'
             /><br/>
             <input
                 type="text"

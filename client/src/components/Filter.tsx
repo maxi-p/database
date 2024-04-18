@@ -81,33 +81,37 @@ const Filter = props =>
     // 5 15 84 1
 
     return(
-        <div>
-            <form onSubmit={submitHandler}>
-                <input 
-                    type="checkbox"
-                    id="public"
-                    name="public"
-                    checked={formData.public}
-                    onChange={handleChange}
-                />
-                <label htmlFor="public"> public</label>
-                <input 
-                    type="checkbox" 
-                    id="private" 
-                    name="private"
-                    checked={formData.private}
-                    onChange={handleChange}
-                />
-                <label htmlFor="private"> private </label>
-                <input 
-                    type="checkbox" 
-                    id="rso" 
-                    name="rso"
-                    checked={formData.rso}
-                    onChange={handleChange}
-                />
-                <label htmlFor="rso"> rso </label><br/>
-                <button>Search</button>
+        <div className="searchparent">
+            <form onSubmit={submitHandler} className="searchBar">
+                <div className="options">
+                    <input 
+                        type="checkbox"
+                        id="public"
+                        name="public"
+                        checked={formData.public}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor="public"> public</label>
+                    <input 
+                        type="checkbox" 
+                        id="private" 
+                        name="private"
+                        checked={formData.private}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor="private"> private </label>
+                    <input 
+                        type="checkbox" 
+                        id="rso" 
+                        name="rso"
+                        checked={formData.rso}
+                        onChange={handleChange}
+                    />
+                    <label htmlFor="rso"> rso </label><br/>
+                </div>
+                <div className="buttons-container">
+                    <button>Search</button>
+                </div>
                 <span>{message}</span><br/>
             </form>
         </div>

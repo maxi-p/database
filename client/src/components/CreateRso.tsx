@@ -49,9 +49,9 @@ const CreateRso = props =>
     };
 
     return(
-        <div id="uploadPostDiv">
+        <div >
         {props.loggedUser && props.loggedUser.level === 'student' ?<span>You are not an admin</span>:
-            <form onSubmit={doCreate}>
+            <form onSubmit={doCreate} id="uploadRsoDiv">
                 <span id="inner-title">Enter Your RSO Name</span><br />
                 <input 
                     type="text"
@@ -60,7 +60,9 @@ const CreateRso = props =>
                     onChange={handleChange}
                     value={formData.name}
                 /><br/>
-                Enter names of initial members<br/>
+                <span style={{textAlign:'center'}}>
+                    Enter names of initial members<br/>
+                </span>
                 <input 
                     type="text"
                     placeholder="username"

@@ -55,9 +55,9 @@ const Login = props =>
     };
 
     return(
-        <div id="loginDiv">
-            <form onSubmit={doLogin}>
-                <span id="inner-title">PLEASE LOG IN</span><br />
+        <div >
+            <form id="loginDiv" onSubmit={doLogin}>
+                <span id="inner-title" style={{textAlign:'center'}}>PLEASE LOG IN</span><br />
                 <input 
                     type="text"
                     placeholder="Username"
@@ -81,8 +81,8 @@ const Login = props =>
                     className="buttons"  
                     onClick={doLogin} 
                 />
-            </form>
             <span id="loginResult">{message}</span>
+            </form>
         </div>
     );
 };

@@ -73,9 +73,9 @@ const Register = props =>
     };
 
     return(
-        <div id="registerDiv">
-            <form onSubmit={doRegister}>
-                <span id="inner-title">PLEASE LOG IN</span><br />
+        <div >
+            <form id="registerDiv" onSubmit={doRegister}>
+                <span id="inner-title" style={{textAlign:'center'}}>PLEASE LOG IN</span><br />
 
                 <input 
                     type="text"
@@ -141,9 +141,8 @@ const Register = props =>
                     value = "Register" 
                     onClick={doRegister} 
                 />
-                <br/>
+                <span id="registerResult">{message}</span>
             </form>
-            <span id="registerResult">{message}</span>
         </div>
     );
 };

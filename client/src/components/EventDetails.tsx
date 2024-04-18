@@ -1,27 +1,27 @@
 const EventDetails = props => {
+    console.log(props.event)
+    const myDate = new Date(props.event.timestamp);
+    const month = (myDate.getMonth() + 1) < 10 ? '0'+(myDate.getMonth() + 1):(myDate.getMonth() + 1);
+    const day = (myDate.getDate()) < 10 ? '0'+(myDate.getDate()):(myDate.getDate());
     return (  
         <section className='post-details'>
-            <h1>{props.event.name}</h1>
-            <div className="card">
-                {props.loggedUser && (props.loggedUser.level==='super_admin' ||  props.event.contact_username === props.loggedUser.username) && 
-                (<button 
-                    className="delete--badge"
-                    name="open-delete"
-                    onClick={props.deleteHandler}
-                >
-                    <img src="./delete.jpg" className="card--star" />
-                </button>)}
-                <img src={'./calendar.png'} className="card--image" />
-                <div className="card--stats">
-                    <img src="./star.png" className="card--star" />
-                    <span className="gray"> • </span>
-                    <span className="gray">{props.event.name}</span>
+            <span className='grand-event-name'>{props.event.name}</span>
+            <div className="card" style={{fontSize: '20px'}}>  
+                <div>
+                    {props.loggedUser && (props.loggedUser.level==='super_admin' ||  props.event.contact_username === props.loggedUser.username) && 
+                    (<button 
+                        className="delete--badge"
+                        name="open-delete"
+                        onClick={props.deleteHandler}
+                    >
+                        <img src="./delete.jpg" className="card--star" />
+                    </button>)}
                 </div>
-                <p className="card--title">Contact User (Owner): {props.event.contact_username}</p>
+                <img src={'./calendar.png'} className="card--image" />  
+                <p className="card--title gray">Contact User: {props.event.contact_username}</p>
                 <p className="card--title">Description: {props.event.description}</p>
-                <p className="card--title">Time: {new Date(props.event.timestamp).toString()}</p>
-                <p className="card--title">University: {props.event.university_id}</p>
-                <p className="card--price"><span className="bold">{props.event.location_id}</span></p>
+                <p className="card--title">Time: { myDate.getHours()-3 + ":" + '00' + " " + month + "/" + day}</p>
+                {props.event.university_id && <p className="card--title">University: {props.event.university_id}</p>}
             </div>
         </section>
         )

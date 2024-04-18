@@ -31,6 +31,7 @@ const Login = props =>
             const response = await fetch('api/addComment', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
             var res = JSON.parse(await response.text());
             setMessage(res.message);
+            setComment('')
         }
         catch(e){
             console.log(json)
@@ -41,13 +42,13 @@ const Login = props =>
     };
 
     return(
-        <div>
+        <div className="comment-form">
             <form onSubmit={postComment}>
-                <span id="inner-title">Comment</span><br />
                 <input 
                     type="text"
                     placeholder="comment"
                     id="comment"
+                    className="comment-field"
                     onChange={handleChange}
                     value={comment}
                 />
@@ -60,7 +61,6 @@ const Login = props =>
                     onClick={postComment} 
                 />
             </form>
-            <span id="loginResult">{message}</span>
         </div>
     );
 };

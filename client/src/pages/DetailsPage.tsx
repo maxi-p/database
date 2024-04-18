@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom';
 import RsoDetails from '../components/RsoDetails';
 import EventDetailsPage from './EventDetailsPage';
 

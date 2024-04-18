@@ -16,7 +16,7 @@ const EventDetailsPage = props => {
             const json = JSON.stringify({ id: id});
             const response = await fetch('api/getEvent', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
             var res = JSON.parse(await response.text());
-            console.log(res)
+            console.log("res",res)
             setEvent(res.event)
         }
         getEvent();
@@ -43,8 +43,10 @@ const EventDetailsPage = props => {
                     deleteHandler={deleteHandler}
                 />}
                 <EventDetails event={event} loggedUser={props.loggedUser} deleteHander={deleteHandler}/>
-                <CommentList loggedUser={props.loggedUser} id={id} allComments={allComments}/>
-                <CommentForm loggedUser={props.loggedUser} id={id} setAllComments={commentHandler}/>
+                <div className='comments-div'>
+                    <CommentList loggedUser={props.loggedUser} id={id} allComments={allComments} setAllComments={commentHandler}/>
+                    <CommentForm loggedUser={props.loggedUser} id={id} setAllComments={commentHandler}/>
+                </div>
             </div>
         </div>
         )

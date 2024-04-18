@@ -11,7 +11,7 @@ const RsoDetails = props => {
     useEffect(() => {
         const getRso = async() => {
             const json = JSON.stringify({ id: id});
-            console.log("id ",id)
+            console.log("id ",id);
             const response = await fetch('/api/getRso', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
             var res = JSON.parse(await response.text());
             console.log('res ',res)
@@ -25,6 +25,7 @@ const RsoDetails = props => {
         }
         getRso();
     },[]);
+
     let parts;
     if(Object.keys(rso).length !== 0){
       parts = rso.participants.map( part =>{
@@ -37,8 +38,8 @@ const RsoDetails = props => {
             const json = JSON.stringify({ id: id, username: props.loggedUser.username});
             const response = await fetch('/api/leaveRso', {method:'POST',body:json,headers:{'Content-Type': 'application/json'}});
             var res = JSON.parse(await response.text());
-            console.log('res ',res)
-            if(res.message === ''){
+            console.log('res ', res)
+            if(res.message === '') {
                 setDeleteMessage('')
                 navigate('/user-home')
             }
@@ -56,26 +57,21 @@ const RsoDetails = props => {
             {message === '' && (<div className="post-detail-container">
                 <section className='post-details'>
                     <h1>{rso.name}</h1>
-                    <div className="card">
+                    <div className="card" style={{fontSize: '20px'}}>
                         <img src={'./rso.png'} className="card--image" />
                         <div className="card--stats">
-                            <img src="./star.png" className="card--star" />
-                            <span className="gray"> • </span>
-                            <span className="gray">{rso.name}</span>
+                            <span className="gray">Owner User: {rso.owner_username}</span>
                         </div>
-                        <p className="card--title">Owner User: {rso.owner_username}</p>
-                        <p className="card--title">Status: {rso.status}</p>
-                        <input
+                        <p className="card--title">Status: {rso.status==='inact'? 'Inactive': 'Active'}</p>
+                        {rso.participants.includes(props.loggedUser.username) && <input
                             type="button" 
                             id="leave" 
                             className="buttons" 
                             value="Leave RSO"
                             onClick={leaveHandler}
-                        />
-                        <p className="card--price"><span className="bold">Participants:</span></p><br/>
-                        <ul>
+                        />}
+                        <span className="bold">Participants:</span><br/>
                           {parts}  
-                        </ul>
                     </div>
                 </section>
             </div>)}

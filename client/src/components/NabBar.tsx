@@ -7,7 +7,6 @@ const NavBar = props => {
     const {name} = event.target;
     if(name === 'logout')
     {
-      localStorage.removeItem("logged_user")
       props.loggedHandler(null);
       navigate('/login');
     }
@@ -23,7 +22,15 @@ const NavBar = props => {
           className=""
           onClick={nav}
           name='home'
-        >Home</a></li>
+        >Home</a>
+      </li>
+      <li className='li'>
+        <a 
+          className=""
+          onClick={nav}
+          name='rso'
+        >RSOs</a>
+      </li>
       {!props.loggedUser && 
       (<li className='li'>
         <a 

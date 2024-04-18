@@ -2,48 +2,10 @@ import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import Event from './Event'
 import HomeEvent from './HomeEvent'
+import HomeRSO from './HomeRSO';
 
 const Events = props =>
 {   
-    console.log(props.loggedUser)
-    // console.log(props.publicEvents,props.privateEvents,props.rsoEvents)
-    const publicEvents = props.publicEvents.map(publicEvent => {
-        // console.log(publicEvent.name)
-        return (
-            <Link to={"/eve="+publicEvent.id.toString()} key={publicEvent.name}>
-                <HomeEvent 
-                    event={publicEvent}
-                />
-            </Link>
-        )
-    });
-    
-
-    const privateEvents = props.privateEvents.map(privateEvent => {
-        // console.log(privateEvent.name)
-        return (
-            <Link to={"/eve="+privateEvent.id.toString()} key={privateEvent.name}>
-                <HomeEvent 
-                    event={privateEvent}
-                />
-            </Link>
-        )
-    });
-    console.log(props.privateEvents)
-    console.log(props.publicEvents)
-
-    const rsoEvents = props.rsoEvents.map(rsoEvent => {
-        // console.log(rsoEvent.name)
-        return (
-            
-            <Link to={"/eve="+rsoEvent.id.toString()} key={rsoEvent.name}>
-                <HomeEvent 
-                    event={rsoEvent}
-                />
-            </Link>
-        )
-    });
-
     const joinHandler = async event => 
         {
             event.preventDefault();
@@ -67,7 +29,13 @@ const Events = props =>
         // console.log(rso)
         return (
                 <Link to={"/rso="+rso.id.toString()} key={rso.id}>
-                    <li key={rso.name}> 
+                    <HomeRSO
+                        rso={rso}
+                        join={true}
+                        joinHandler={joinHandler}
+                        index={rso.id}
+                    />
+                    {/* <li key={rso.name}> 
                         <input
                             type="button" 
                             id={rso.id} 
@@ -76,7 +44,7 @@ const Events = props =>
                             onClick={joinHandler}
                             />
                         {rso.name}
-                    </li>
+                    </li> */}
                 </Link>
         )
     });
@@ -85,9 +53,9 @@ const Events = props =>
         // console.log(rso)
         return (
             <Link to={"/rso="+myrso.id.toString()} key={myrso.id}>
-                <li key={myrso.name}> 
-                    {myrso.name}
-                </li>
+                <HomeRSO
+                    rso={myrso}
+                />
             </Link>
         )
     });
@@ -95,11 +63,10 @@ const Events = props =>
     return (<div className="post-detail-container">
                 <div className="body-posts">
                     <span>{props.rsoMessage}</span>
-                    <span className="events-span">Events:</span>
+                    <span className="events-span">Rso:</span>
                     <div className="eventContainer">
-                        {publicEvents}
-                        {privateEvents}
-                        {rsoEvents}
+                            {rsolist}
+                            {myrsolist}
                     </div>
                 </div>
             </div>)

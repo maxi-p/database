@@ -143,12 +143,12 @@ def pendingAdmins():
 @app.route('/api/getPendingEvents', methods=['POST'])
 def pendingEvents():
     mydb, my_cursor = dbconnect()
-    query = ("SELECT P.id, E.name, E.contact_username FROM Pending_Event P INNER JOIN Event E ON P.id=E.id")
+    query = ("SELECT * FROM Pending_Event P INNER JOIN Event E ON P.id=E.id")
     my_cursor.execute(query)
     
     arr = []
     for ret in my_cursor:
-        arr.append({'id':ret[0],'name':ret[1],'contact_username':ret[2]})
+        arr.append({'id':ret[0],'location_id':ret[2],'category_id':ret[3],'contact_username':ret[4],'name':ret[5],'timestamp':ret[6],'description':ret[7]})
     res = {'pendingEvents': arr, 'message':''}
     if len(arr) == 0:
         res['message'] = 'no pending events returned'
@@ -499,6 +499,58 @@ def getAllRsos():
     dbclose((mydb, my_cursor))
     return jsonify(res),201
 
+@app.route('/api/editComment', methods=["POST"])
+def editComment():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+    
+    try:
+        mydb, my_cursor = dbconnect()
+        update = ("UPDATE Commented C "
+                "SET C.text=%s "
+                "WHERE C.id=%s ")
+        
+        my_cursor.execute(update, (data['newComment'], data['id']))
+        count = my_cursor.rowcount
+        if count == 0:
+            res['message'] = 'error: comment was not edited'
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201
+
+        mydb.commit() 
+    except:
+        res['message'] = 'There was an error'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
+@app.route('/api/deleteComment', methods=["POST"])
+def deleteComment():
+    data=request.get_json()
+    print(data)
+    res = {'message':''}
+    
+    try:
+        mydb, my_cursor = dbconnect()
+        delete = ("DELETE FROM Commented C "
+                "WHERE C.id=%s ")
+        
+        my_cursor.execute(delete, (data['id'],))
+        count = my_cursor.rowcount
+        if count == 0:
+            res['message'] = 'error: comment was not deleted'
+            dbclose((mydb, my_cursor))
+            return jsonify(res),201
+
+        mydb.commit() 
+    except:
+        res['message'] = 'There was an error'
+    
+    dbclose((mydb, my_cursor))
+    return jsonify(res),201
+
+
 @app.route('/api/joinRso', methods=["POST"])
 def joinRSO():
     data=request.get_json()
@@ -550,7 +602,7 @@ def decidePending():
 
         my_cursor.execute(delete, (uname,))
         count = my_cursor.rowcount
-        if count == 0 or data['username'] == '':
+        if count == 0 == '':
             res['message'] = 'user was not deleted from pending'
             dbclose((mydb, my_cursor))
             return jsonify(res),201
