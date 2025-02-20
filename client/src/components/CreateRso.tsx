@@ -52,7 +52,7 @@ const CreateRso = props =>
         <div >
         {props.loggedUser && props.loggedUser.level === 'student' ?<span>You are not an admin</span>:
             <form onSubmit={doCreate} id="uploadRsoDiv">
-                <span id="inner-title">Enter Your RSO Name</span><br />
+                <span id="inner-title" style={{fontWeight:"bold",textAlign:'center'}}>Enter Your RSO Name</span><br />
                 <input 
                     type="text"
                     placeholder="name"

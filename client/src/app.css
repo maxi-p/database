@@ -252,6 +252,7 @@
     font-weight: bold;
     font-size: 20px;
     margin:auto;
+    margin-left: 60px;
 }
 .user-info {
     position: absolute;

@@ -95,7 +95,8 @@ def getComments():
 def addComment():
     data=request.get_json()
     mydb, my_cursor = dbconnect()
-    insert = ("INSERT INTO Commented (event_id, student_username, text, timestamp)"
+    insert = ("INSERT INTO Commented" 
+              "(event_id, student_username, text, timestamp)"
               "VALUES (%s, %s, %s, %s)")
 
     my_cursor.execute(insert, (data['event_id'],data['student_username'],data['text'],data['timestamp']))
@@ -256,9 +257,18 @@ def getEvents():
         data=request.get_json()
         print(data)
 
-        public = ("SELECT * FROM Public_Event INNER JOIN Event ON Public_Event.id=Event.id")
-        private = ("SELECT * FROM Private_Event INNER JOIN Event ON Private_Event.id=Event.id INNER JOIN (SELECT university_id FROM Student WHERE username=%s) AS T ON Private_Event.university_id=T.university_id;")
-        rso = ("SELECT * FROM RSO_Event INNER JOIN Event ON RSO_Event.id=Event.id INNER JOIN (SELECT rso_id FROM Participates WHERE student_username=%s) AS T ON RSO_Event.rso_id=T.rso_id;")
+        public = ("SELECT * FROM Public_Event" 
+                  "INNER JOIN Event ON Public_Event.id=Event.id")
+        
+        private = ("SELECT * FROM Private_Event" 
+                   "INNER JOIN Event ON Private_Event.id=Event.id" 
+                   "INNER JOIN (SELECT university_id FROM Student WHERE username=%s) AS T" 
+                   "ON Private_Event.university_id=T.university_id;")
+        
+        rso = ("SELECT * FROM RSO_Event" 
+               "INNER JOIN Event ON RSO_Event.id=Event.id" 
+               "INNER JOIN (SELECT rso_id FROM Participates WHERE student_username=%s) AS T" 
+               "ON RSO_Event.rso_id=T.rso_id;")
 
         if data['public'] == True:
             my_cursor.execute(public)
@@ -358,16 +368,19 @@ def createRso():
     data=request.get_json()
     print(data)
     res = {'message':''}
+    rid = -1
     
     try:
         mydb, my_cursor = dbconnect()
-        query = ("INSERT INTO RSO (owner_username, name, status)"
+        query = ("INSERT INTO RSO" 
+                 "(owner_username, name, status)"
                  "VALUES  (%s, %s, 'inact')")
-        join = ("INSERT INTO Participates (rso_id, student_username)"
-                 "VALUES  (%s, %s)")
-        rid = -1
+        join = ("INSERT INTO Participates" 
+                "(rso_id, student_username)"
+                "VALUES  (%s, %s)")
         my_cursor.execute(query, (data['owner_username'],data['name']))
         count = my_cursor.rowcount
+
         print(count)
         if count == 0 or data['name'] == '':
             res['message'] = 'request was not executed'
@@ -407,9 +420,11 @@ def createEvent():
     print(data)
     res = {'message':''}
     
-    location = ("INSERT INTO Location (name, latitude, longitude)"
-                 "VALUES  (%s, %s, %s)")
-    event = ("INSERT INTO Event (location_id, category_id, contact_username, name, timestamp, description)"
+    location = ("INSERT INTO Location" 
+                "(name, latitude, longitude)"
+                "VALUES  (%s, %s, %s)")
+    event = ("INSERT INTO Event" 
+             "(location_id, category_id, contact_username, name, timestamp, description)"
              "VALUES (%s, %s, %s, %s, %s, %s)")
     try:
         mydb, my_cursor = dbconnect()
@@ -508,10 +523,11 @@ def editComment():
     try:
         mydb, my_cursor = dbconnect()
         update = ("UPDATE Commented C "
-                "SET C.text=%s "
-                "WHERE C.id=%s ")
+                  "SET C.text=%s "
+                  "WHERE C.id=%s ")
         
         my_cursor.execute(update, (data['newComment'], data['id']))
+
         count = my_cursor.rowcount
         if count == 0:
             res['message'] = 'error: comment was not edited'
@@ -534,9 +550,10 @@ def deleteComment():
     try:
         mydb, my_cursor = dbconnect()
         delete = ("DELETE FROM Commented C "
-                "WHERE C.id=%s ")
+                  "WHERE C.id=%s ")
         
         my_cursor.execute(delete, (data['id'],))
+
         count = my_cursor.rowcount
         if count == 0:
             res['message'] = 'error: comment was not deleted'
@@ -559,11 +576,13 @@ def joinRSO():
     
     try:
         mydb, my_cursor = dbconnect()
-        join = ("INSERT INTO Participates (rso_id, student_username) "
+        join = ("INSERT INTO Participates" 
+                "(rso_id, student_username) "
                  "VALUES  (%s, %s)")
         
         my_cursor.execute(join, (data['id'], data['username']))
         count = my_cursor.rowcount
+        
         if count == 0 or data['username'] == '':
             res['message'] = 'error: RSO was not joined'
             dbclose((mydb, my_cursor))

@@ -20,7 +20,7 @@ const EventDetails = props => {
                 <img src={'./calendar.png'} className="card--image" />  
                 <p className="card--title gray">Contact User: {props.event.contact_username}</p>
                 <p className="card--title">Description: {props.event.description}</p>
-                <p className="card--title">Time: { myDate.getHours()-3 + ":" + '00' + " " + month + "/" + day}</p>
+                <p className="card--title">Time: { myDate.getHours()+5+ ":" + '00' + " " + month + "/" + day}</p>
                 {props.event.university_id && <p className="card--title">University: {props.event.university_id}</p>}
             </div>
         </section>

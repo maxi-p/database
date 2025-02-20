@@ -14,7 +14,7 @@ const HomePendingEvent = props => {
             Contact: {props.event.contact_username}
         </div>
         <div className="event-details">
-            Time: { myDate.getHours()-3 + ":" + '00' + " " + month + "/" + day}
+            Time: { myDate.getHours()+5 + ":" + '00' + " " + month + "/" + day}
         </div>
         <div style={{textAlign:'center'}}>
             <input
